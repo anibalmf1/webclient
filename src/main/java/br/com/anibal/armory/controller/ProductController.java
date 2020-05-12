@@ -1,15 +1,12 @@
 package br.com.anibal.armory.controller;
 
-import br.com.anibal.armory.model.Price;
 import br.com.anibal.armory.model.Product;
 import br.com.anibal.armory.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping(ProductController.PRODUCT_URL)
@@ -24,22 +21,22 @@ public class ProductController {
 
     @GetMapping(GET_PRODUCT_URL)
     public ResponseEntity<?> getProduct(@PathVariable Integer id) {
-        Product product = service.getProduct(id);
+        Optional<Product> product = service.getProduct(id);
 
-        if (product == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(product, HttpStatus.OK);
+        return product.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping(GET_PRODUCT_WITH_PRICE_URL)
-    public  ResponseEntity<?> getProductWithPrice(@PathVariable Integer id) {
-        Product product = service.getProductWithPrice(id);
+    public ResponseEntity<?> getProductWithPrice(@PathVariable Integer id) {
+        Optional<Product> product = service.getProductWithPrice(id);
 
-        if (product == null) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        }
+        return product.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
 
-        return new ResponseEntity<>(product, HttpStatus.OK);
+    @PostMapping
+    public ResponseEntity<?> saveProduct(@RequestBody Product product) {
+        Optional<Product> created = service.saveProduct(product);
+
+        return created.map(ResponseEntity::ok).orElse(ResponseEntity.badRequest().build());
     }
 }
