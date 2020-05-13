@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Optional;
 
 @RestController
@@ -34,7 +35,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveProduct(@RequestBody Product product) {
+    public ResponseEntity<?> saveProduct(@RequestBody @Valid Product product) {
         Optional<Product> created = service.saveProduct(product);
 
         return created.map(ResponseEntity::ok).orElse(ResponseEntity.badRequest().build());
